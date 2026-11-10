@@ -4,7 +4,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>DayBloom - Settings</title>
+
+<meta name="theme-color" content="#6f8f78">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 
 <style>
 * {
@@ -251,7 +257,6 @@ button:hover {
 
     <h1 class="page-title">Settings</h1>
 
-    <!-- PROFILE SECTION -->
     <section class="profile-card">
 
         <div class="profile-top">
@@ -292,7 +297,6 @@ button:hover {
 
     </section>
 
-    <!-- ABOUT YOUR PROFILE -->
     <section class="about-card">
 
         <h2>About Your Profile</h2>
@@ -362,6 +366,7 @@ emailInput.value =
 function updateProfileDisplay() {
 
     const name = nameInput.value.trim();
+
     const initial = name
         ? name.charAt(0).toUpperCase()
         : "V";

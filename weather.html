@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DayBloom | Weather</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <aside class="sidebar">
+        <div class="logo">DayBloom</div>
+
+        <nav>
+            <a href="index.html" class="nav-link">⌂ Home</a>
+            <a href="weather.html" class="nav-link active">☁ Weather</a>
+            <a href="calendar.html" class="nav-link">▦ Calendar</a>
+            <a href="settings.html" class="nav-link">⚙ Settings</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <p>Weather. Time.</p>
+            <p>Your day.</p>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="top-header">
+            <div>
+                <h1 id="greeting">Good Morning!</h1>
+                <h2 id="username">Welcome to DayBloom</h2>
+            </div>
+
+            <a href="settings.html" style="text-decoration:none;">
+                <span class="profile-button" id="headerInitial">D</span>
+            </a>
+        </header>
+
+        <section class="location-section">
+
+            <button id="openMap" class="location-button">
+                📍 Search Location on Map
+            </button>
+
+            <button id="myLocation" class="location-button">
+                ◎ Use My Location
+            </button>
+
+        </section>
+
+        <section class="weather-main-card">
+
+            <div class="weather-left">
+
+                <h2 id="cityName">Select a location</h2>
+
+                <p id="coordinates">
+                    Choose a place on the map
+                </p>
+
+                <div class="temperature">
+                    <span id="temperature">--°C</span>
+                    <span id="weatherIcon">☀️</span>
+                </div>
+
+                <p id="weatherDescription">
+                    Weather information will appear here
+                </p>
+
+                <p id="feelsLike">Feels like: --°C</p>
+
+            </div>
+
+            <div class="weather-details">
+
+                <p>Humidity <span id="humidity">--%</span></p>
+                <p>Wind <span id="wind">-- km/h</span></p>
+                <p>Pressure <span id="pressure">-- hPa</span></p>
+                <p>UV Index <span id="uv">--</span></p>
+
+            </div>
+
+        </section>
+
+        <section class="weather-section">
+
+            <div class="section-heading">
+                <h2>Temperature Trends</h2>
+
+                <select id="chartMode">
+                    <option value="hourly">Hourly</option>
+                    <option value="daily">5-Day</option>
+                </select>
+            </div>
+
+            <div class="chart-card">
+                <canvas id="weatherChart"></canvas>
+            </div>
+
+        </section>
+
+        <section class="weather-section">
+
+            <h2>5-Day Forecast</h2>
+
+            <div id="forecastContainer" class="forecast-grid">
+                <p>Select a location to view the forecast.</p>
+            </div>
+
+        </section>
+
+        <section class="weather-section">
+
+            <h2>Today's Highlights</h2>
+
+            <div class="highlights-grid">
+
+                <div class="highlight-card">
+                    <span>🌡️</span>
+                    <p>Feels Like</p>
+                    <h3 id="highlightFeels">--°C</h3>
+                </div>
+
+                <div class="highlight-card">
+                    <span>💧</span>
+                    <p>Humidity</p>
+                    <h3 id="highlightHumidity">--%</h3>
+                </div>
+
+                <div class="highlight-card">
+                    <span>🌬️</span>
+                    <p>Wind Speed</p>
+                    <h3 id="highlightWind">-- km/h</h3>
+                </div>
+
+                <div class="highlight-card">
+                    <span>☀️</span>
+                    <p>UV Index</p>
+                    <h3 id="highlightUV">--</h3>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- MAP MODAL -->
+
+<div id="mapModal" class="map-modal">
+
+    <div class="map-box">
+
+        <div class="map-header">
+
+            <div>
+                <h2>Select Location on Map</h2>
+                <p>Drag the map to explore. Click anywhere to drop a pin.</p>
+            </div>
+
+            <button id="closeMap" class="close-button">✕</button>
+
+        </div>
+
+        <div id="map"></div>
+
+        <div class="map-footer">
+
+            <div>
+                <strong>Selected Coordinates</strong>
+                <p id="selectedCoordinates">No location selected</p>
+            </div>
+
+            <button id="confirmLocation" class="confirm-button">
+                Confirm Location ✓
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

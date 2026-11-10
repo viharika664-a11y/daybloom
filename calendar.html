@@ -1,0 +1,1000 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DayBloom | Calendar</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .calendar-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+            gap: 22px;
+            margin-top: 35px;
+        }
+
+        .calendar-panel,
+        .todo-panel {
+            background: #F0EFE8;
+            border: 1px solid #E4E2D9;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .calendar-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .calendar-heading h2,
+        .todo-panel h2 {
+            font-family: Georgia, serif;
+            font-size: 25px;
+        }
+
+        .month-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .month-controls button {
+            border: 1px solid #D5D9CE;
+            background: white;
+            border-radius: 8px;
+            padding: 8px 13px;
+            cursor: pointer;
+            color: #40533D;
+        }
+
+        .weekdays,
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .weekdays div {
+            text-align: center;
+            color: #777C73;
+            font-size: 13px;
+            padding: 10px 0;
+            font-weight: bold;
+        }
+
+        .calendar-day {
+            min-height: 78px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            background: #FAF9F5;
+            cursor: pointer;
+            text-align: center;
+            padding: 8px 3px;
+            color: #292D28;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .calendar-day:hover {
+            background: #E0E6D9;
+        }
+
+        .calendar-day.today {
+            border-color: #758568;
+            font-weight: bold;
+        }
+
+        .calendar-day.selected {
+            background: #52684E;
+            color: white;
+        }
+
+        .calendar-day.other-month {
+            color: #B6B8B0;
+        }
+
+        .day-number {
+            font-size: 14px;
+        }
+
+        /* HOLIDAY NAME INSIDE DATE BOX */
+
+        .holiday-label {
+            display: block;
+            width: 100%;
+            font-size: 9px;
+            line-height: 1.2;
+            color: #A44D42;
+            font-weight: bold;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .calendar-day.selected .holiday-label {
+            color: white;
+        }
+
+        .day-markers {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-height: 7px;
+        }
+
+        .task-dot,
+        .holiday-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .task-dot {
+            background: #B17B48;
+        }
+
+        .holiday-dot {
+            background: #B65B4D;
+        }
+
+        .calendar-day.selected .task-dot,
+        .calendar-day.selected .holiday-dot {
+            background: white;
+        }
+
+        /* CALENDAR LEGEND */
+
+        .holiday-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 18px;
+            color: #777C73;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-holiday {
+            background: #B65B4D;
+        }
+
+        .legend-task {
+            background: #B17B48;
+        }
+
+        /* SELECTED DATE */
+
+        .selected-date {
+            color: #777C73;
+            margin: 12px 0 14px;
+            font-size: 14px;
+        }
+
+        /* HOLIDAY INFORMATION */
+
+        .holiday-info {
+            display: none;
+            background: #F7E9E4;
+            border-left: 4px solid #B65B4D;
+            color: #783F36;
+            padding: 13px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .holiday-info.visible {
+            display: block;
+        }
+
+        .holiday-info strong {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        /* TO-DO FORM */
+
+        .todo-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .todo-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid #D5D9CE;
+            border-radius: 8px;
+            background: #FAF9F5;
+            font-size: 14px;
+        }
+
+        .todo-form button {
+            padding: 12px 16px;
+            border: none;
+            background: #52684E;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .todo-form button:hover {
+            background: #354638;
+        }
+
+        .task-summary {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 22px 0;
+            font-size: 13px;
+            color: #777C73;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #FAF9F5;
+            padding: 13px;
+            border-radius: 9px;
+        }
+
+        .task-item input {
+            width: 17px;
+            height: 17px;
+            accent-color: #52684E;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .task-text {
+            flex: 1;
+            overflow-wrap: anywhere;
+            font-size: 14px;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #999B93;
+        }
+
+        .delete-task {
+            border: none;
+            background: transparent;
+            color: #A44D42;
+            cursor: pointer;
+            font-size: 19px;
+        }
+
+        .empty-tasks {
+            color: #85877F;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 12px 0;
+        }
+
+        @media (max-width: 850px) {
+            .calendar-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .calendar-panel,
+            .todo-panel {
+                padding: 14px;
+            }
+
+            .calendar-day {
+                min-height: 65px;
+                font-size: 13px;
+            }
+
+            .holiday-label {
+                font-size: 8px;
+            }
+
+            .weekdays div {
+                font-size: 11px;
+            }
+
+            .todo-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <aside class="sidebar">
+
+        <div class="logo">DayBloom</div>
+
+        <nav>
+            <a href="index.html" class="nav-link">⌂ Home</a>
+            <a href="weather.html" class="nav-link">☁ Weather</a>
+            <a href="calendar.html" class="nav-link active">▦ Calendar</a>
+            <a href="settings.html" class="nav-link">⚙ Settings</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <p>Weather. Time.</p>
+            <p>Your day.</p>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="top-header">
+
+            <div>
+                <h1 id="greeting">Good Morning!</h1>
+                <h2 id="username">Welcome to DayBloom</h2>
+            </div>
+
+            <a href="settings.html" style="text-decoration:none;">
+                <span class="profile-button" id="headerInitial">D</span>
+            </a>
+
+        </header>
+
+        <div class="calendar-layout">
+
+            <section class="calendar-panel">
+
+                <div class="calendar-heading">
+
+                    <h2 id="calendarMonth">Month Year</h2>
+
+                    <div class="month-controls">
+                        <button id="prevMonth" type="button">←</button>
+                        <button id="nextMonth" type="button">→</button>
+                    </div>
+
+                </div>
+
+                <div class="weekdays">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+
+                <div id="calendarGrid" class="calendar-grid"></div>
+
+                <div class="holiday-legend">
+
+                    <div class="legend-item">
+                        <span class="legend-dot legend-holiday"></span>
+                        Public holiday
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot legend-task"></span>
+                        Tasks
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="todo-panel">
+
+                <h2>My To-Do List</h2>
+
+                <p id="selectedDateLabel" class="selected-date"></p>
+
+                <div id="holidayInfo" class="holiday-info">
+                    <strong id="holidayName"></strong>
+                    <span>Karnataka public holiday – 2026</span>
+                </div>
+
+                <form id="todoForm" class="todo-form">
+
+                    <input
+                        type="text"
+                        id="todoInput"
+                        placeholder="Add a new task..."
+                        maxlength="100"
+                        required
+                    >
+
+                    <button type="submit">+ Add</button>
+
+                </form>
+
+                <div class="task-summary">
+                    <span id="pendingCount">0 Pending</span>
+                    <span id="completedCount">0 Completed</span>
+                </div>
+
+                <div id="todoList" class="task-list">
+                    <p class="empty-tasks">
+                        No tasks yet. Add something to get started!
+                    </p>
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+// ==========================================
+// DAYBLOOM CALENDAR AND TO-DO LIST
+// WITH HOLIDAY NAMES
+// ==========================================
+
+const calendarGrid =
+    document.getElementById("calendarGrid");
+
+const calendarMonth =
+    document.getElementById("calendarMonth");
+
+const selectedDateLabel =
+    document.getElementById("selectedDateLabel");
+
+const todoForm =
+    document.getElementById("todoForm");
+
+const todoInput =
+    document.getElementById("todoInput");
+
+const todoList =
+    document.getElementById("todoList");
+
+const holidayInfo =
+    document.getElementById("holidayInfo");
+
+const holidayName =
+    document.getElementById("holidayName");
+
+let currentDate = new Date();
+
+let selectedDate = new Date();
+
+let tasks = JSON.parse(
+    localStorage.getItem("daybloomTasks") || "{}"
+);
+
+// ==========================================
+// KARNATAKA PUBLIC HOLIDAYS - 2026
+// ==========================================
+
+const holidays = {
+
+    "2026-01-15": "Makara Sankranti",
+
+    "2026-01-26": "Republic Day",
+
+    "2026-03-19": "Ugadi",
+
+    "2026-03-21": "Id-ul-Fitr",
+
+    "2026-03-31": "Mahavir Jayanti",
+
+    "2026-04-03": "Good Friday",
+
+    "2026-04-14": "Dr. B.R. Ambedkar Jayanti",
+
+    "2026-04-20": "Basava Jayanti and Akshaya Tritiya",
+
+    "2026-05-01": "May Day",
+
+    "2026-05-28": "Bakrid",
+
+    "2026-06-26": "Last Day of Muharram",
+
+    "2026-08-15": "Independence Day",
+
+    "2026-08-26": "Eid-Milad",
+
+    "2026-09-14": "Varasiddhi Vinayaka Vrata",
+
+    "2026-10-02": "Gandhi Jayanti",
+
+    "2026-10-20": "Mahanavami and Ayudha Puja",
+
+    "2026-10-21": "Vijayadashami (Dussehra)",
+
+    "2026-11-01": "Kannada Rajyotsava",
+
+    "2026-11-10": "Balipadyami and Deepavali",
+
+    "2026-11-27": "Kanakadasa Jayanti",
+
+    "2026-12-25": "Christmas"
+
+};
+
+// ==========================================
+// DATE KEY
+// ==========================================
+
+function dateKey(date) {
+
+    const year = date.getFullYear();
+
+    const month = String(date.getMonth() + 1)
+        .padStart(2, "0");
+
+    const day = String(date.getDate())
+        .padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+
+}
+
+// ==========================================
+// SAVE TASKS
+// ==========================================
+
+function saveTasks() {
+
+    localStorage.setItem(
+        "daybloomTasks",
+        JSON.stringify(tasks)
+    );
+
+}
+
+// ==========================================
+// RENDER CALENDAR
+// ==========================================
+
+function renderCalendar() {
+
+    calendarGrid.innerHTML = "";
+
+    const year = currentDate.getFullYear();
+
+    const month = currentDate.getMonth();
+
+    calendarMonth.textContent =
+        currentDate.toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric"
+        });
+
+    const firstDay =
+        new Date(year, month, 1).getDay();
+
+    const daysInMonth =
+        new Date(year, month + 1, 0).getDate();
+
+    const previousMonthDays =
+        new Date(year, month, 0).getDate();
+
+    const todayKey = dateKey(new Date());
+
+    const selectedKey = dateKey(selectedDate);
+
+    for (let i = 0; i < 42; i++) {
+
+        let dayNumber;
+
+        let dayDate;
+
+        let otherMonth = false;
+
+        if (i < firstDay) {
+
+            dayNumber =
+                previousMonthDays - firstDay + i + 1;
+
+            dayDate =
+                new Date(year, month - 1, dayNumber);
+
+            otherMonth = true;
+
+        } else if (i >= firstDay + daysInMonth) {
+
+            dayNumber =
+                i - firstDay - daysInMonth + 1;
+
+            dayDate =
+                new Date(year, month + 1, dayNumber);
+
+            otherMonth = true;
+
+        } else {
+
+            dayNumber = i - firstDay + 1;
+
+            dayDate =
+                new Date(year, month, dayNumber);
+
+        }
+
+        const key = dateKey(dayDate);
+
+        const dayButton =
+            document.createElement("button");
+
+        dayButton.type = "button";
+
+        dayButton.className = "calendar-day";
+
+        dayButton.setAttribute(
+            "aria-label",
+            dayDate.toDateString() +
+            (holidays[key] ? ", " + holidays[key] : "")
+        );
+
+        // DATE NUMBER
+
+        const number =
+            document.createElement("span");
+
+        number.className = "day-number";
+
+        number.textContent = dayNumber;
+
+        dayButton.appendChild(number);
+
+        // HOLIDAY NAME INSIDE DATE BOX
+
+        if (holidays[key]) {
+
+            const holidayLabel =
+                document.createElement("span");
+
+            holidayLabel.className = "holiday-label";
+
+            holidayLabel.textContent = holidays[key];
+
+            dayButton.appendChild(holidayLabel);
+
+        }
+
+        // HOLIDAY AND TASK DOTS
+
+        const markers =
+            document.createElement("span");
+
+        markers.className = "day-markers";
+
+        // HOLIDAY DOT
+
+        if (holidays[key]) {
+
+            const holidayDot =
+                document.createElement("span");
+
+            holidayDot.className = "holiday-dot";
+
+            holidayDot.title = holidays[key];
+
+            markers.appendChild(holidayDot);
+
+        }
+
+        // TASK DOT
+
+        if (tasks[key] && tasks[key].length > 0) {
+
+            const taskDot =
+                document.createElement("span");
+
+            taskDot.className = "task-dot";
+
+            taskDot.title = "Tasks";
+
+            markers.appendChild(taskDot);
+
+        }
+
+        dayButton.appendChild(markers);
+
+        // TODAY
+
+        if (key === todayKey) {
+            dayButton.classList.add("today");
+        }
+
+        // OTHER MONTH
+
+        if (otherMonth) {
+            dayButton.classList.add("other-month");
+        }
+
+        // SELECTED DATE
+
+        if (key === selectedKey) {
+            dayButton.classList.add("selected");
+        }
+
+        // SELECT DATE
+
+        dayButton.addEventListener("click", function() {
+
+            selectedDate = new Date(dayDate);
+
+            currentDate = new Date(
+                dayDate.getFullYear(),
+                dayDate.getMonth(),
+                1
+            );
+
+            renderCalendar();
+
+            renderTasks();
+
+        });
+
+        calendarGrid.appendChild(dayButton);
+
+    }
+
+}
+
+// ==========================================
+// DISPLAY SELECTED DATE AND HOLIDAY
+// ==========================================
+
+function renderHoliday() {
+
+    const key = dateKey(selectedDate);
+
+    if (holidays[key]) {
+
+        holidayInfo.classList.add("visible");
+
+        holidayName.textContent =
+            "🎉 " + holidays[key];
+
+    } else {
+
+        holidayInfo.classList.remove("visible");
+
+        holidayName.textContent = "";
+
+    }
+
+}
+
+// ==========================================
+// RENDER TO-DO LIST
+// ==========================================
+
+function renderTasks() {
+
+    const key = dateKey(selectedDate);
+
+    selectedDateLabel.textContent =
+        selectedDate.toLocaleDateString("en-US", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+    renderHoliday();
+
+    todoList.innerHTML = "";
+
+    const dayTasks = tasks[key] || [];
+
+    const pending = dayTasks.filter(
+        task => !task.completed
+    ).length;
+
+    const completed = dayTasks.filter(
+        task => task.completed
+    ).length;
+
+    document.getElementById("pendingCount")
+        .textContent = `${pending} Pending`;
+
+    document.getElementById("completedCount")
+        .textContent = `${completed} Completed`;
+
+    if (dayTasks.length === 0) {
+
+        const empty = document.createElement("p");
+
+        empty.className = "empty-tasks";
+
+        empty.textContent =
+            "No tasks yet. Add something to get started!";
+
+        todoList.appendChild(empty);
+
+        return;
+
+    }
+
+    dayTasks.forEach((task, index) => {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "task-item";
+
+        if (task.completed) {
+            item.classList.add("completed");
+        }
+
+        const checkbox =
+            document.createElement("input");
+
+        checkbox.type = "checkbox";
+
+        checkbox.checked = task.completed;
+
+        checkbox.addEventListener("change", function() {
+
+            tasks[key][index].completed =
+                checkbox.checked;
+
+            saveTasks();
+
+            renderTasks();
+
+        });
+
+        const text =
+            document.createElement("span");
+
+        text.className = "task-text";
+
+        text.textContent = task.text;
+
+        const deleteButton =
+            document.createElement("button");
+
+        deleteButton.className = "delete-task";
+
+        deleteButton.type = "button";
+
+        deleteButton.textContent = "×";
+
+        deleteButton.addEventListener("click", function() {
+
+            tasks[key].splice(index, 1);
+
+            if (tasks[key].length === 0) {
+                delete tasks[key];
+            }
+
+            saveTasks();
+
+            renderCalendar();
+
+            renderTasks();
+
+        });
+
+        item.appendChild(checkbox);
+
+        item.appendChild(text);
+
+        item.appendChild(deleteButton);
+
+        todoList.appendChild(item);
+
+    });
+
+}
+
+// ==========================================
+// ADD NEW TASK
+// ==========================================
+
+todoForm.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const text = todoInput.value.trim();
+
+    if (!text) return;
+
+    const key = dateKey(selectedDate);
+
+    if (!tasks[key]) {
+        tasks[key] = [];
+    }
+
+    tasks[key].push({
+        text: text,
+        completed: false
+    });
+
+    saveTasks();
+
+    todoInput.value = "";
+
+    renderCalendar();
+
+    renderTasks();
+
+});
+
+// ==========================================
+// PREVIOUS MONTH
+// ==========================================
+
+document.getElementById("prevMonth")
+    .addEventListener("click", function() {
+
+        currentDate.setDate(1);
+
+        currentDate.setMonth(
+            currentDate.getMonth() - 1
+        );
+
+        renderCalendar();
+
+    });
+
+// ==========================================
+// NEXT MONTH
+// ==========================================
+
+document.getElementById("nextMonth")
+    .addEventListener("click", function() {
+
+        currentDate.setDate(1);
+
+        currentDate.setMonth(
+            currentDate.getMonth() + 1
+        );
+
+        renderCalendar();
+
+    });
+
+// ==========================================
+// INITIAL DISPLAY
+// ==========================================
+
+renderCalendar();
+
+renderTasks();
+
+</script>
+
+</body>
+</html>
